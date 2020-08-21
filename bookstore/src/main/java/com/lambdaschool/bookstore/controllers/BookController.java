@@ -42,9 +42,7 @@ public class BookController
     // http://localhost:2019/books/book/{bookId}
     @GetMapping(value = "/book/{bookId}",
             produces = {"application/json"})
-    public ResponseEntity<?> getBookById(HttpServletRequest request,
-                                         @PathVariable
-                                                 Long bookId)
+    public ResponseEntity<?> getBookById(HttpServletRequest request, @PathVariable Long bookId)
     {
         Book s = bookService.findBookById(bookId);
         return new ResponseEntity<>(s,

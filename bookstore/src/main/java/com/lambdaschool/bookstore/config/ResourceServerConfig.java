@@ -1,6 +1,7 @@
 package com.lambdaschool.bookstore.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -43,6 +44,7 @@ public class ResourceServerConfig
         // authenticated = any authenticated, signed in, user
         // hasAnyRole = must be authenticated and be assigned this role!
         http.authorizeRequests()
+                //anyone can access these endpoints
                 .antMatchers("/",
                              "/h2-console/**",
                              "/swagger-resources/**",
@@ -52,13 +54,23 @@ public class ResourceServerConfig
                              "/webjars/**",
                              "/createnewuser")
                 .permitAll()
+                //any application that has been authenticated can access these endpoints
                 .antMatchers("/users/**",
                              "/useremails/**",
                              "/oauth/revoke-token",
                              "/logout")
                 .authenticated()
+                //admins and data type users can access any endpoint in roles
                 .antMatchers("/roles/**")
                 .hasAnyRole("ADMIN", "DATA")
+                //admins can access any enpoint in books
+                .antMatchers( "/books/**")
+                .hasAnyRole("ADMIN")
+                //data can get a list of books and specific books
+                .antMatchers(HttpMethod.GET,
+                "/books/books",
+                "/books/book/**")
+                .hasAnyRole("DATA")
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(new OAuth2AccessDeniedHandler());
